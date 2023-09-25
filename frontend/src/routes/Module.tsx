@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { server } from "../constants/serverLink";
+import Arrow from "../assets/arrow.svg";
+import { EditButton } from "../components/EditButton";
 
 interface IData {
   id: string;
@@ -12,7 +14,8 @@ interface IData {
 
 export default function Module() {
   let { moduleId } = useParams();
-  const [data, setData] = useState<IData>();
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<IData | null>();
 
   const fetchData = async () => {
     try {
@@ -24,10 +27,11 @@ export default function Module() {
       });
 
       const data = await response.json();
-      console.log(data);
       setData(data);
+      setLoading(false);
     } catch (error) {
-      console.log(error);
+      setData(null);
+      setLoading(false);
     }
   };
 
@@ -35,14 +39,38 @@ export default function Module() {
     fetchData();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="w-full h-screen bg-slate-300 flex flex-col items-center py-10">
+        <h1 className="text-xl font-bold">Loading...</h1>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-screen bg-slate-300 flex flex-col items-center py-10">
-      <div className="bg-slate-200 shadow-lg rounded-md p-10 flex flex-col gap-6 justify-between max-w-lg m-4">
-        <h1 className="text-xl font-bold">{data?.name}</h1>
-        <p className="text-xl">{data?.description}</p>
-        <p className="text-xl font-bold">{data?.targetTemperature}℃</p>
-
-        {/* <p>{item.available}</p> */}
+      <div className="bg-slate-200 shadow-lg rounded-md p-10 px-12 flex flex-col gap-6 justify-between max-w-lg m-4 relative items-center">
+        <Link to={"/"}>
+          <img src={Arrow} alt="arrow" className="absolute top-6 left-4" />
+        </Link>
+        {data ? (
+          <>
+            <div className="flex flex-row justify-between w-full">
+              <h1 className="text-xl font-bold">{data.name}</h1>
+              <p className="text-xl font-bold">{data.targetTemperature}℃</p>
+            </div>
+            <p className="text-base">{data.description}</p>
+            <EditButton
+              onClick={() => console.log("click")}
+              available={data.available}
+            />
+            {!data.available && (
+              <p className="text-sm">This module is not available</p>
+            )}
+          </>
+        ) : (
+          <h1 className="text-xl font-bold">Module not found</h1>
+        )}
       </div>
     </div>
   );
