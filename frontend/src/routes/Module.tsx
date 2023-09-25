@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { server } from "../constants/serverLink";
 import Arrow from "../assets/arrow.svg";
-import { EditButton } from "../components/EditButton";
+import { Button } from "../components/Button";
+import { Modal } from "../components/Modal";
+import { IFormInput } from "../constants/interfaces";
 
 interface IData {
   id: string;
@@ -16,6 +18,38 @@ export default function Module() {
   let { moduleId } = useParams();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<IData | null>();
+  const [open, setOpen] = useState(false);
+
+  const toggleModal = () => {
+    setOpen(true);
+  };
+
+  const sendData = async (formData: IFormInput) => {
+    try {
+      const response = await fetch(server + `/modules/${moduleId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        setData(data);
+      }
+    } catch (error) {
+      setData(null);
+      setLoading(false);
+    }
+  };
+
+  const closeModal = (data?: IFormInput) => {
+    if (data) {
+      sendData(data);
+    }
+    setOpen(false);
+  };
 
   const fetchData = async () => {
     try {
@@ -60,13 +94,19 @@ export default function Module() {
               <p className="text-xl font-bold">{data.targetTemperature}℃</p>
             </div>
             <p className="text-base">{data.description}</p>
-            <EditButton
-              onClick={() => console.log("click")}
-              available={data.available}
-            />
+            <Button onClick={toggleModal} available={data.available} />
             {!data.available && (
               <p className="text-sm">This module is not available</p>
             )}
+            <Modal
+              open={open}
+              onClose={closeModal}
+              data={{
+                name: data?.name,
+                description: data?.description,
+                targetTemperature: data?.targetTemperature,
+              }}
+            />
           </>
         ) : (
           <h1 className="text-xl font-bold">Module not found</h1>

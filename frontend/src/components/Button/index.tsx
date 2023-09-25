@@ -1,9 +1,10 @@
 interface IEditButtonProps {
   available: boolean;
+  text?: string;
   onClick: () => void;
 }
 
-export const EditButton = (props: IEditButtonProps) => {
+export const Button = (props: IEditButtonProps) => {
   return (
     <button
       onClick={props.available ? props.onClick : () => {}}
@@ -13,7 +14,7 @@ export const EditButton = (props: IEditButtonProps) => {
           : "bg-slate-300 font-bold py-2 px-4 rounded uppercase cursor-not-allowed"
       }
     >
-      Edit
+      {props.text ? props.text : "Edit"}
     </button>
   );
 };

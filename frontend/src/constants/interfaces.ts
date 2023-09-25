@@ -4,3 +4,9 @@ export interface IData {
   targetTemperature: number;
   available: boolean;
 }
+
+export interface IFormInput {
+  name: string;
+  description: string;
+  targetTemperature: number;
+}
