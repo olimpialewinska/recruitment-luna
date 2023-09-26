@@ -42,6 +42,7 @@ export const Modal = (props: IModalProps) => {
         backgroundColor: "rgba(0, 0, 0, 0.6)",
         display: props.open ? "flex" : "none",
       }}
+      data-testid="modal-body"
       onClick={(e) => handleOverlayClick(e)}
     >
       <form
@@ -60,10 +61,12 @@ export const Modal = (props: IModalProps) => {
         <div className="flex flex-col">
           <label
             className={`text-sm font-bold ${errors.name ? "text-red-400" : ""}`}
+            htmlFor="name"
           >
             {errors.name ? "Name is required" : "Name"}
           </label>
           <input
+            id="name"
             {...register("name", { required: true })}
             type="text"
             placeholder="Name"
@@ -75,10 +78,12 @@ export const Modal = (props: IModalProps) => {
             className={`text-sm font-bold ${
               errors.description ? "text-red-400" : ""
             }`}
+            htmlFor="description"
           >
             {errors.description ? "Description is required" : "Description"}
           </label>
           <textarea
+            id="description"
             {...register("description", { required: true })}
             placeholder="Description"
             rows={5}
@@ -90,12 +95,14 @@ export const Modal = (props: IModalProps) => {
             className={`text-sm font-bold ${
               errors.targetTemperature ? "text-red-400" : ""
             }`}
+            htmlFor="targetTemperature"
           >
             {errors.targetTemperature
               ? "Target Temperature must be between 0 and 40"
               : "Target Temperature"}
           </label>
           <input
+            id="targetTemperature"
             type="number"
             {...register("targetTemperature", {
               required: true,

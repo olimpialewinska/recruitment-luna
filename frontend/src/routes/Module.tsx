@@ -5,6 +5,8 @@ import Arrow from "../assets/arrow.svg";
 import { Button } from "../components/Button";
 import { Modal } from "../components/Modal";
 import { IFormInput } from "../constants/interfaces";
+import { useSocket } from "../constants/useSocket";
+import { Temperature } from "../components/Temperature";
 
 interface IData {
   id: string;
@@ -19,6 +21,7 @@ export default function Module() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<IData | null>();
   const [open, setOpen] = useState(false);
+  const message = useSocket();
 
   const toggleModal = () => {
     setOpen(true);
@@ -91,7 +94,12 @@ export default function Module() {
           <>
             <div className="flex flex-row justify-between w-full">
               <h1 className="text-xl font-bold">{data.name}</h1>
-              <p className="text-xl font-bold">{data.targetTemperature}℃</p>
+              <Temperature
+                targetTemperature={data.targetTemperature}
+                temperature={
+                  message && message.find((i) => i.id === data.id)?.temperature
+                }
+              />
             </div>
             <p className="text-base">{data.description}</p>
             <Button onClick={toggleModal} available={data.available} />

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { server } from "../constants/serverLink";
-import { Link } from "react-router-dom";
 import { IData } from "../constants/interfaces";
+import { Link } from "react-router-dom";
 import Available from "../assets/available.svg";
 import Unavailable from "../assets/unavailable.svg";
+import { Temperature } from "../components/Temperature";
+import { useSocket } from "../constants/useSocket";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -13,7 +15,6 @@ export default function App() {
     try {
       const response = await fetch(server + "/modules");
       const data = await response.json();
-      console.log(data);
       setData(data);
       setLoading(false);
     } catch (error) {
@@ -21,6 +22,8 @@ export default function App() {
       setLoading(false);
     }
   };
+
+  const message = useSocket();
 
   useEffect(() => {
     fetchData();
@@ -52,7 +55,10 @@ export default function App() {
                 />
                 <h1 className="text-xl">{item.name}</h1>
               </div>
-              <p className="text-xl font-bold">{item.targetTemperature}℃</p>
+              <Temperature
+                targetTemperature={item.targetTemperature}
+                temperature={message.find((i) => i.id === item.id)?.temperature}
+              />
             </Link>
           ))
         ) : (
