@@ -31,6 +31,9 @@ export default function Module() {
     try {
       const response = await fetch(server + `/modules/${moduleId}`, {
         method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(formData),
       });
 
@@ -55,6 +58,9 @@ export default function Module() {
     try {
       const response = await fetch(server + `/modules/${moduleId}`, {
         method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
       const data = await response.json();

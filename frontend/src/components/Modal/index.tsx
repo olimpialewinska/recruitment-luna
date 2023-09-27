@@ -25,8 +25,8 @@ export const Modal = (props: IModalProps) => {
   });
 
   const onSubmit: SubmitHandler<IFormInput> = (data) => {
-    reset(data);
     props.onClose(data);
+    reset(data);
   };
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
