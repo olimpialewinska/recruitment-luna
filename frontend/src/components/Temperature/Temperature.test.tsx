@@ -1,6 +1,5 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom/extend-expect"; // Import Jest DOM for expect assertions
+import "@testing-library/jest-dom/extend-expect";
 import { Temperature } from ".";
 
 describe("Temperature Component", () => {

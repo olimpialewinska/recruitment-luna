@@ -1,7 +1,8 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 import { Modal } from ".";
+import { act } from "react-dom/test-utils";
 
 describe("Modal Component", () => {
   const mockData = {
@@ -18,7 +19,7 @@ describe("Modal Component", () => {
     expect(modalBody).toHaveStyle("display: flex");
   });
 
-  it("does not render the modal when open prop is false", () => {
+  it("does not render the modal when open prop is false", async () => {
     render(<Modal open={false} data={mockData} onClose={() => {}} />);
 
     const modalBody = screen.queryByTestId("modal-body");
@@ -34,7 +35,9 @@ describe("Modal Component", () => {
 
     fireEvent.click(overlay);
 
-    expect(onCloseMock).toHaveBeenCalledWith(undefined);
+    act(() => {
+      expect(onCloseMock).toHaveBeenCalledWith(undefined);
+    });
   });
 
   it("calls onClose with undefined when close button is clicked", () => {
@@ -44,11 +47,12 @@ describe("Modal Component", () => {
     const closeButton = screen.getByAltText("close");
 
     fireEvent.click(closeButton);
-
-    expect(onCloseMock).toHaveBeenCalledWith(undefined);
+    act(() => {
+      expect(onCloseMock).toHaveBeenCalledWith(undefined);
+    });
   });
 
-  it("calls onClose with the form data when form is submitted", () => {
+  it("calls onClose with the form data when form is submitted", async () => {
     const onCloseMock = jest.fn();
     render(<Modal open={true} data={mockData} onClose={onCloseMock} />);
 
@@ -64,34 +68,34 @@ describe("Modal Component", () => {
     fireEvent.change(targetTemperatureInput, { target: { value: 30 } });
     fireEvent.click(submitButton);
 
-    setTimeout(() => {
+    await waitFor(() => {
       expect(onCloseMock).toHaveBeenCalledWith({
         name: "New Name",
         description: "New Description",
         targetTemperature: 30,
       });
-    }, 1000);
+    });
   });
 
-  it("displays validation error when submitting an empty form", () => {
+  it("displays validation error when submitting an empty form", async () => {
     const onCloseMock = jest.fn();
     render(<Modal open={true} data={undefined} onClose={onCloseMock} />);
 
     const submitButton = screen.getByText("Submit");
     fireEvent.click(submitButton);
 
-    setTimeout(() => {
+    await waitFor(() => {
       expect(screen.getByText("Name is required")).toBeInTheDocument();
-      expect(screen.getByText("Description is required")).toBeInTheDocument();
-      expect(
-        screen.getByText("Target Temperature must be between 0 and 40")
-      ).toBeInTheDocument();
-    }, 1000);
+    });
+    expect(screen.getByText("Description is required")).toBeInTheDocument();
+    expect(
+      screen.getByText("Target Temperature must be between 0 and 40")
+    ).toBeInTheDocument();
 
     expect(onCloseMock).not.toHaveBeenCalled();
   });
 
-  it("displays validation error when submitting with invalid input", () => {
+  it("displays validation error when submitting with invalid input", async () => {
     const onCloseMock = jest.fn();
     render(<Modal open={true} data={undefined} onClose={onCloseMock} />);
 
@@ -106,18 +110,18 @@ describe("Modal Component", () => {
 
     fireEvent.click(submitButton);
 
-    setTimeout(() => {
+    await waitFor(() => {
       expect(screen.getByText("Name is required")).toBeInTheDocument();
-      expect(screen.getByText("Description is required")).toBeInTheDocument();
-      expect(
-        screen.getByText("Target Temperature must be between 0 and 40")
-      ).toBeInTheDocument();
-    }, 1000);
+    });
+    expect(screen.getByText("Description is required")).toBeInTheDocument();
+    expect(
+      screen.getByText("Target Temperature must be between 0 and 40")
+    ).toBeInTheDocument();
 
     expect(onCloseMock).not.toHaveBeenCalled();
   });
 
-  it("submits the form with valid input", () => {
+  it("submits the form with valid input", async () => {
     const onCloseMock = jest.fn();
     render(<Modal open={true} data={undefined} onClose={onCloseMock} />);
 
@@ -130,15 +134,16 @@ describe("Modal Component", () => {
     fireEvent.change(descriptionInput, {
       target: { value: "New Description" },
     });
-    fireEvent.change(temperatureInput, { target: { value: "30" } });
+    fireEvent.change(temperatureInput, { target: { value: 30 } });
 
     fireEvent.click(submitButton);
-    setTimeout(() => {
+
+    await waitFor(() => {
       expect(onCloseMock).toHaveBeenCalledWith({
         name: "New Name",
         description: "New Description",
         targetTemperature: 30,
       });
-    }, 1000);
+    });
   });
 });

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
-import { server } from "./serverLink";
+import { server } from "../constants/serverLink";
 
 interface IMessage {
   id: string;

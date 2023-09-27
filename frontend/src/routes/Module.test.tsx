@@ -4,6 +4,7 @@ import "@testing-library/jest-dom/extend-expect";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import Module from "./Module";
 import fetchMock from "jest-fetch-mock";
+import { act } from "react-dom/test-utils";
 
 fetchMock.enableMocks();
 
@@ -26,7 +27,7 @@ const mockMessage = [
   },
 ];
 
-jest.mock("../constants/useSocket", () => ({
+jest.mock("../utils/useSocket", () => ({
   useSocket: jest.fn(() => mockMessage),
 }));
 
@@ -38,78 +39,83 @@ jest.mock("../constants/interfaces", () => ({
   },
 }));
 
-test("renders loading state", () => {
-  render(
-    <MemoryRouter initialEntries={[`/modules/${mockModuleId}`]}>
-      <Routes>
-        <Route path="/modules/:moduleId" element={<Module />}></Route>
-      </Routes>
-    </MemoryRouter>
-  );
+describe("Module Component", () => {
+  it("should render loading state", async () => {
+    render(
+      <MemoryRouter initialEntries={[`/modules/${mockModuleId}`]}>
+        <Routes>
+          <Route path="/modules/:moduleId" element={<Module />}></Route>
+        </Routes>
+      </MemoryRouter>
+    );
 
-  const loadingText = screen.getByText("Loading...");
-  expect(loadingText).toBeInTheDocument();
-});
-
-test("renders module data", async () => {
-  fetchMock.mockResponseOnce(JSON.stringify(mockData));
-
-  render(
-    <MemoryRouter initialEntries={[`/modules/${mockModuleId}`]}>
-      <Routes>
-        <Route path="/modules/:moduleId" element={<Module />}></Route>
-      </Routes>
-    </MemoryRouter>
-  );
-
-  await waitFor(() => {
-    const descriptionElement = screen.getByText("This is a test module");
-    expect(descriptionElement).toBeInTheDocument();
-  });
-});
-
-test("renders error state", async () => {
-  fetchMock.mockRejectOnce();
-
-  render(
-    <MemoryRouter initialEntries={[`/modules/${mockModuleId}`]}>
-      <Routes>
-        <Route path="/modules/:moduleId" element={<Module />}></Route>
-      </Routes>
-    </MemoryRouter>
-  );
-
-  await waitFor(() => {
-    const errorElement = screen.getByText("Module not found");
-    expect(errorElement).toBeInTheDocument();
-  });
-});
-
-test("opens and closes modal", async () => {
-  fetchMock.mockResponseOnce(JSON.stringify(mockData));
-
-  render(
-    <MemoryRouter initialEntries={[`/modules/${mockModuleId}`]}>
-      <Routes>
-        <Route path="/modules/:moduleId" element={<Module />}></Route>
-      </Routes>
-    </MemoryRouter>
-  );
-
-  await waitFor(() => {
-    screen.getByText("Edit");
+    await act(async () => {
+      const loadingText = await screen.findByText("Loading...");
+      expect(loadingText).toBeInTheDocument();
+    });
   });
 
-  const editButton = screen.getByText("Edit");
-  fireEvent.click(editButton);
+  it("should render module data", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify(mockData));
 
-  const modal = screen.getByTestId("modal-body");
-  expect(modal).toHaveStyle("display: flex");
+    render(
+      <MemoryRouter initialEntries={[`/modules/${mockModuleId}`]}>
+        <Routes>
+          <Route path="/modules/:moduleId" element={<Module />}></Route>
+        </Routes>
+      </MemoryRouter>
+    );
 
-  const closeButton = screen.getByAltText("close");
-  fireEvent.click(closeButton);
+    await waitFor(() => {
+      const descriptionElement = screen.getByText("This is a test module");
+      expect(descriptionElement).toBeInTheDocument();
+    });
+  });
 
-  await waitFor(() => {
-    expect(modal).toHaveStyle("display: none");
+  it("should render error state", async () => {
+    fetchMock.mockRejectOnce();
+
+    render(
+      <MemoryRouter initialEntries={[`/modules/${mockModuleId}`]}>
+        <Routes>
+          <Route path="/modules/:moduleId" element={<Module />}></Route>
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      const errorElement = screen.getByText("Module not found");
+      expect(errorElement).toBeInTheDocument();
+    });
+  });
+
+  it("should open and close modal", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify(mockData));
+
+    render(
+      <MemoryRouter initialEntries={[`/modules/${mockModuleId}`]}>
+        <Routes>
+          <Route path="/modules/:moduleId" element={<Module />}></Route>
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      screen.getByText("Edit");
+    });
+
+    const editButton = screen.getByText("Edit");
+
+    fireEvent.click(editButton);
+
+    const modal = screen.getByTestId("modal-body");
+    expect(modal).toHaveStyle("display: flex");
+
+    const closeButton = screen.getByAltText("close");
+    fireEvent.click(closeButton);
+
+    await waitFor(() => {
+      expect(modal).toHaveStyle("display: none");
+    });
   });
 });

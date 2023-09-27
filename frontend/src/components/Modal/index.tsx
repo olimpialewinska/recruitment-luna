@@ -23,8 +23,9 @@ export const Modal = (props: IModalProps) => {
   } = useForm<IFormInput>({
     defaultValues: props.data,
   });
+
   const onSubmit: SubmitHandler<IFormInput> = (data) => {
-    reset();
+    reset(data);
     props.onClose(data);
   };
 
@@ -108,6 +109,7 @@ export const Modal = (props: IModalProps) => {
               required: true,
               min: 0,
               max: 40,
+              valueAsNumber: true,
             })}
             placeholder="Target Temperature"
             className="border-2 border-gray-400 rounded-md p-2"

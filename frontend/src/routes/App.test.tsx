@@ -1,6 +1,6 @@
 import React from "react";
 import "core-js";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import App from "./App";
 import { MemoryRouter } from "react-router-dom";
 import fetchMock from "jest-fetch-mock";
@@ -11,50 +11,56 @@ beforeEach(() => {
   fetchMock.resetMocks();
 });
 
-test("renders app component", () => {
-  render(<App />);
-  const linkElement = screen.getByText("Loading...");
+describe("App Component", () => {
+  it("should render App component", async () => {
+    render(<App />);
+    const linkElement = screen.getByText("Loading...");
 
-  expect(linkElement).toBeInTheDocument();
-});
-
-test("fetch fail", async () => {
-  fetchMock.mockReject();
-
-  render(<App />);
-
-  await waitFor(() => {
-    const errorElement = screen.getByText("No modules found");
-    expect(errorElement).toBeInTheDocument();
+    await act(async () => {
+      expect(linkElement).toBeInTheDocument();
+    });
   });
-});
 
-test("fetch success", async () => {
-  const mockSuccessResponse = [
-    {
-      id: "1",
-      name: "test",
-      description: "test",
-      image: "test",
-    },
-    {
-      id: "2",
-      name: "abc",
-      description: "test",
-      image: "test",
-    },
-  ];
+  it("should display info when fetch fails", async () => {
+    fetchMock.mockReject();
 
-  fetchMock.mockResponse(JSON.stringify(mockSuccessResponse));
+    render(<App />);
 
-  render(
-    <MemoryRouter>
-      <App />
-    </MemoryRouter>
-  );
+    await waitFor(() => {
+      const errorElement = screen.getByText("No modules found");
+      expect(errorElement).toBeInTheDocument();
+    });
+  });
 
-  await waitFor(() => {
-    const moduleElement = screen.getByText("test");
-    expect(moduleElement).toBeInTheDocument();
+  it("should display data when fetch succeeded", async () => {
+    const mockSuccessResponse = [
+      {
+        id: "1",
+        name: "test",
+        description: "test",
+        image: "test",
+      },
+      {
+        id: "2",
+        name: "abc",
+        description: "test",
+        image: "test",
+      },
+    ];
+
+    fetchMock.mockResponse(JSON.stringify(mockSuccessResponse));
+
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      const moduleElement1 = screen.getByText("test");
+      const moduleElement2 = screen.getByText("abc");
+
+      expect(moduleElement1 && moduleElement2).toBeInTheDocument();
+    });
   });
 });

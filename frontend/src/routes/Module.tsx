@@ -5,7 +5,7 @@ import Arrow from "../assets/arrow.svg";
 import { Button } from "../components/Button";
 import { Modal } from "../components/Modal";
 import { IFormInput } from "../constants/interfaces";
-import { useSocket } from "../constants/useSocket";
+import { useSocket } from "../utils/useSocket";
 import { Temperature } from "../components/Temperature";
 
 interface IData {
@@ -31,9 +31,6 @@ export default function Module() {
     try {
       const response = await fetch(server + `/modules/${moduleId}`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(formData),
       });
 
@@ -58,9 +55,6 @@ export default function Module() {
     try {
       const response = await fetch(server + `/modules/${moduleId}`, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
       });
 
       const data = await response.json();

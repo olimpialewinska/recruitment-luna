@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import Available from "../assets/available.svg";
 import Unavailable from "../assets/unavailable.svg";
 import { Temperature } from "../components/Temperature";
-import { useSocket } from "../constants/useSocket";
+import { useSocket } from "../utils/useSocket";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
