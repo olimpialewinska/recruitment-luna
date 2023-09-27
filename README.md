@@ -1,6 +1,6 @@
 # IoT Module Management Application - Aquaponics Farming
 
-This is a project for an IoT module management application designed to measure water parameters in aquaponics farming. The application is built using ReactJS and aims to allow users to browse available modules and edit their parameters. Below, you will find information about the functionality, how to run the project, and testing.
+This is a project for an IoT module management application designed to measure water parameters in aquaponics farming. The application is built using ReactJS, TypeScript, and Tailwind CSS and aims to allow users to browse available modules and edit their parameters. Below, you will find information about the functionality, how to run the project, and testing.
 
 ## Features
 
